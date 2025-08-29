@@ -1,52 +1,55 @@
-from Hand import Hand
-from Deck import Deck
-from Pot import Pot
-from Player import Player
-
 class Game:
     def __init__(self):
-        self.deck = Deck()
-        self.pot = Pot()
+        self.board = [[-1 for _ in range(3)] for _ in range(3)]
 
-        self.hand1 = Hand()
-        self.hand2 = Hand()
+    def declare_win(self, c):
+        self.show_board()
+        print(f'Player {c} wins!')
+        exit(0)
 
-        for _ in range (0, 3):
-            rand_card1 = self.deck.get_r_card()
-            rand_card2 = self.deck.get_r_card()
-            self.hand1.add_card(rand_card1)
-            self.hand2.add_card(rand_card2)
+    def check_winning(self):
+        for i in range(3):
+            if self.board[i][0] == self.board[i][1] == self.board[i][2] != -1:
+                self.declare_win(self.board[i][0])
+        for i in range(3):
+            if self.board[0][i] == self.board[1][i] == self.board[2][i] != -1:
+                self.declare_win(self.board[0][i])
+        if self.board[0][0] == self.board[1][1] == self.board[2][2] != -1:
+            self.declare_win(self.board[1][1])
+        if self.board[2][0] == self.board[1][1] == self.board[0][2] != -1:
+            self.declare_win(self.board[2][0])
 
-        self.player1 = Player(self.hand1, 10000)
-        self.player2 = Player(self.hand2, 10000)
+    def show_board(self):
+        for row in self.board:
+            print('|'.join([' ' if cell == -1 else str(cell) for cell in row]))
 
-        self.com_cards = []
+    def Gameloop(self):
+        i = 0
+        while True:
+            print('----------TicTacToe game--------')
+            print('Player 1 is X, Player 2 is O')
+            self.show_board()
 
-    def print_hands(self):
-        self.hand1.print_hand()
-        self.hand2.print_hand()
+            current_player = 1 if i % 2 == 0 else 2
+            print(f"Player {current_player}'s turn")
+            i += 1
 
-    def print_pot(self):
-        self.pot.print_pot_size()
+            input_c = 1 if current_player == 1 else 0
 
-    def populate_com_cards(self, n):
-        for i in range (n):
-            self.com_cards.append(self.deck.get_r_card())
+            move = input("Enter your move as 'row,col' (e.g., 1,2): ")
+            try:
+                row, col = map(int, move.split(','))
+                if 0 <= row < 3 and 0 <= col < 3:  # Ensure row and col are within bounds
+                    if self.board[row][col] == -1:
+                        self.board[row][col] = input_c
+                    else:
+                        print("Invalid move! Cell already occupied.")
+                else:
+                    print("Invalid move! Row and column must be between 0 and 2.")
+            except (ValueError, IndexError):
+                print("Invalid input! Please enter row and column as 'row,col' (e.g., 1,2).")
 
-    def print_com_cards(self):
-        print(" | ".join(card.print_card() for card in self.com_cards))
+            self.check_winning()
 
-    def flop(self):
-        self.populate_com_cards(self, 3)
-        self.print_com_cards()
-
-    def turn(self):
-        self.populate_com_cards(self, 1)
-        self.print_com_cards()
-
-    def river(self):
-        self.populate_com_cards(self, 1)
-        self.print_com_cards()
-
-    def GameLoop(self):
-        for 
+g = Game()
+g.Gameloop()
